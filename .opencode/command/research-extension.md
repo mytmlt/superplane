@@ -1,0 +1,1 @@
+../../.cursor/commands/research-extension.md

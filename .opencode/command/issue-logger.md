@@ -1,0 +1,1 @@
+../../.cursor/commands/issue-logger.md
