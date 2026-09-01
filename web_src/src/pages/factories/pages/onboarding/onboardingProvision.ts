@@ -131,17 +131,29 @@ export type CreateFactoryIntake = (input: { source: FactoriesFactoryIntakeSource
 // canvas scores those tasks. The backend reads the connection and the
 // backlog repository from the saved onboarding config, so this runs after the
 // wizard choices are stored. A retried finish must not add a second copy.
+//
+// A repository with no open issues is a normal backlog, not an error: the
+// intake still opens with an empty first batch, and Backlog shows its zero
+// state. Finish must not fail because a repository happens to have nothing to
+// seed, so a failed create here is worth a workspace without an intake, not a
+// blocked setup. A later finish (or a manual retry from the Backlog menu)
+// lists again and creates it once the transient failure is gone.
 export async function provisionGithubIntake(args: {
   listIntakes: ListFactoryIntakes;
   createIntake: CreateFactoryIntake;
-}): Promise<FactoriesFactoryIntake> {
+}): Promise<FactoriesFactoryIntake | undefined> {
   const intakes = await args.listIntakes();
   const existing = intakes.find((intake) => intake.source === GITHUB_INTAKE_SOURCE);
   if (existing) {
     return existing;
   }
 
-  return args.createIntake({ source: GITHUB_INTAKE_SOURCE });
+  try {
+    return await args.createIntake({ source: GITHUB_INTAKE_SOURCE });
+  } catch (error) {
+    console.warn("Failed to create the GitHub intake; the workspace still finishes without it", error);
+    return undefined;
+  }
 }
 
 export type ListFactoryPRFeedbackHandlers = () => Promise<FactoriesFactoryPrFeedbackHandler[]>;

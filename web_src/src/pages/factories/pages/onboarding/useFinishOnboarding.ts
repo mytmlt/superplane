@@ -129,7 +129,9 @@ async function provisionWorkspace(args: {
     agentRewrite: args.agentRewrite,
     installFactory: args.installFactory,
   });
-  // The intake needs the line: it opens tasks that the line runs.
+  // The intake needs the line: it opens tasks that the line runs. Creating it
+  // is best-effort (see provisionGithubIntake), so an empty or momentarily
+  // unreachable backlog never blocks the workspace from finishing.
   await provisionGithubIntake({
     listIntakes: args.listIntakes,
     createIntake: args.createIntake,

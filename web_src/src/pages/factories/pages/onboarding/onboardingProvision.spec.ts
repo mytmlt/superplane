@@ -149,7 +149,23 @@ describe("provisionGithubIntake", () => {
     const intake = await provisionGithubIntake({ listIntakes, createIntake });
 
     expect(createIntake).toHaveBeenCalledWith({ source: GITHUB_INTAKE_SOURCE });
-    expect(intake.id).toBe("intake-2");
+    expect(intake?.id).toBe("intake-2");
+  });
+
+  // A repository with no open issues is a normal backlog, not a reason to
+  // fail. Finish must reach the workspace even when the create request fails,
+  // so a retry (finish again, or Backlog's own "Analyze" action) can add the
+  // intake later.
+  it("does not throw when creating the intake fails, so finish can still complete", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const listIntakes = vi.fn().mockResolvedValue([]);
+    const createIntake = vi.fn().mockRejectedValue(new Error("no open issues"));
+
+    const intake = await provisionGithubIntake({ listIntakes, createIntake });
+
+    expect(intake).toBeUndefined();
+    expect(warn).toHaveBeenCalled();
+    warn.mockRestore();
   });
 });
 
