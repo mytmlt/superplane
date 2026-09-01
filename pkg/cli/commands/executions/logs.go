@@ -344,10 +344,23 @@ func renderRunnerLogRecord(stdout io.Writer, record runneraction.LiveLogRecord) 
 }
 
 func cmdStartTitle(record runneraction.LiveLogRecord) string {
-	if preview := strings.TrimSpace(record.Preview); preview != "" {
-		return preview
+	if line := firstNonEmptyLine(record.Preview); line != "" {
+		return line
 	}
 	return record.Text
+}
+
+// firstNonEmptyLine returns the first non-empty, trimmed line of text so the
+// CLI keeps a compact, single-line command title even though the preview
+// field now carries the full command or prompt body.
+func firstNonEmptyLine(text string) string {
+	for _, line := range strings.Split(text, "\n") {
+		line = strings.TrimSpace(line)
+		if line != "" {
+			return line
+		}
+	}
+	return ""
 }
 
 func int64Value(value *int64) int64 {

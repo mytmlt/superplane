@@ -169,19 +169,39 @@ describe("PhaseLogCard collapsed stream", () => {
     const bashTitle = within(bash).getByText("Clone Repo");
     expect(bash).not.toHaveClass("whitespace-nowrap");
     expect(bashTitle).not.toHaveClass("truncate");
-    expect(bashTitle).toHaveClass("whitespace-normal", "break-words");
+    expect(bashTitle).toHaveClass("whitespace-pre-wrap", "break-words");
 
     const prompt = screen.getByTestId("split-run-stream-line-step-write");
     const promptTitle = within(prompt).getByText("Write Implementation Plan");
     expect(prompt).not.toHaveClass("whitespace-nowrap");
     expect(promptTitle).not.toHaveClass("truncate");
-    expect(promptTitle).toHaveClass("whitespace-normal", "break-words");
+    expect(promptTitle).toHaveClass("whitespace-pre-wrap", "break-words");
 
     const output = within(screen.getByTestId("split-run-stream-line-step-clone").parentElement as HTMLElement)
       .getByTestId("split-run-stream-output")
       .querySelector("pre");
     expect(output).toHaveClass("whitespace-pre-wrap", "break-words");
     expect(output).not.toHaveClass("truncate");
+  });
+
+  it("shows the full body of a multi-line bash or prompt title", () => {
+    const MULTILINE_STREAM: SplitRunStreamLine[] = [
+      line({ id: "planner-agent", componentName: "Agent - Plan for GH Issue", componentType: "Run Claude Code" }),
+      line({
+        id: "step-build",
+        note: true,
+        componentName: "set -e\necho building\necho done",
+        componentType: "bash",
+      }),
+    ];
+    render(<PhaseLogCard phase={PHASE} expanded stream={MULTILINE_STREAM} />);
+
+    const step = screen.getByTestId("split-run-stream-line-step-build");
+    expect(step.textContent).toContain("set -e");
+    expect(step.textContent).toContain("echo building");
+    expect(step.textContent).toContain("echo done");
+    const title = within(step).getByText((_, element) => element?.textContent === "set -e\necho building\necho done");
+    expect(title).toHaveClass("whitespace-pre-wrap", "break-words");
   });
 
   it("expands the selected node in the log", () => {

@@ -279,5 +279,21 @@ function toolGroupCount(section: CommandSection): number {
 }
 
 export function sectionTitle(section: CommandSection): string {
-  return section.preview?.trim() || section.text;
+  return firstNonEmptyLine(section.preview) || section.text;
+}
+
+// firstNonEmptyLine returns the first non-empty, trimmed line of text so the
+// dialog header stays a compact single line even though section.preview now
+// carries the full command or prompt body.
+function firstNonEmptyLine(text: string | undefined): string {
+  if (!text) {
+    return "";
+  }
+  for (const line of text.split("\n")) {
+    const trimmed = line.trim();
+    if (trimmed) {
+      return trimmed;
+    }
+  }
+  return "";
 }
