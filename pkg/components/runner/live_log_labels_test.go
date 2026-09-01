@@ -7,10 +7,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestLiveLogPreviewUsesFirstNonEmptyLine(t *testing.T) {
+func TestLiveLogPreviewKeepsFullBody(t *testing.T) {
 	t.Parallel()
 
-	assert.Equal(t, `echo "hello"`, LiveLogPreview("\n  echo \"hello\"\nworld"))
+	assert.Equal(t, "echo a\n  echo b", LiveLogPreview("\n  echo a\n  echo b\n"))
 	assert.Equal(t, "", LiveLogPreview("  \n\t"))
 
 	clone := `git clone --depth 1 "https://x-access-token:${GITHUB_TOKEN}@github.com/${REPO}.git"`

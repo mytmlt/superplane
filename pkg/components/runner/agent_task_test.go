@@ -82,6 +82,32 @@ func TestBuildAgentBrokerTaskAppliesStepWorkingDirectory(t *testing.T) {
 	assert.Equal(t, LLMUsageScript, requireBrokerFile(t, files, "llm_usage.js").Content)
 }
 
+func TestBuildAgentBrokerTaskPreviewKeepsMultilineBody(t *testing.T) {
+	t.Parallel()
+
+	prompt := "implement the change\nkeep tests green"
+	command := "set -e\necho building"
+	commands, _ := BuildAgentBrokerTask(
+		"Prepare",
+		NodePrepareScript("", "", ""),
+		"run.js",
+		"echo run",
+		"",
+		[]AgentStep{
+			{Name: "Build", Type: AgentStepBash, Command: &command},
+			{Name: "Implement", Type: AgentStepPrompt, Prompt: &prompt},
+		},
+		"google/gemini-3.7-flash",
+		func(promptName, model string) string {
+			return "node run.js " + promptName + " " + model
+		},
+	)
+
+	require.Len(t, commands, 3)
+	assert.Equal(t, command, commands[1].Preview)
+	assert.Equal(t, prompt, commands[2].Preview)
+}
+
 func TestBuildAgentBrokerTaskAppliesNodeWorkingDirectoryWhenStepEmpty(t *testing.T) {
 	t.Parallel()
 

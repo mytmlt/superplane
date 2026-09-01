@@ -12,19 +12,15 @@ const (
 	liveLogPreviewMaxRunes = 2048
 )
 
-// LiveLogPreview is the first non-empty line of user-facing command or prompt text.
-// The log row ellipsizes in the UI. The rune cap only bounds a huge one-line prompt.
+// LiveLogPreview is the full user-facing command or prompt text, with only its
+// outer whitespace trimmed. Internal newlines are preserved so the UI can
+// render the complete body, wrapped. The rune cap only bounds a very large
+// body.
 func LiveLogPreview(text string) string {
-	for _, line := range strings.Split(text, "\n") {
-		line = strings.TrimSpace(line)
-		if line == "" {
-			continue
-		}
-		runes := []rune(line)
-		if len(runes) > liveLogPreviewMaxRunes {
-			return string(runes[:liveLogPreviewMaxRunes])
-		}
-		return line
+	trimmed := strings.TrimSpace(text)
+	runes := []rune(trimmed)
+	if len(runes) > liveLogPreviewMaxRunes {
+		return string(runes[:liveLogPreviewMaxRunes])
 	}
-	return ""
+	return trimmed
 }

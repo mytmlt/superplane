@@ -121,4 +121,16 @@ describe("notesFromLiveLogSections", () => {
     ]);
     expect(notes.some((note) => note.componentType === "bash" && note.componentName === "echo a")).toBe(true);
   });
+
+  it("keeps the full multi-line preview in componentName", () => {
+    const notes = notesFromLiveLogSections("agent", [
+      {
+        ...promptSection(),
+        preview: "You are implementing a fix\nkeep tests green",
+        events: [],
+      },
+    ]);
+
+    expect(notes[0]?.componentName).toBe("You are implementing a fix\nkeep tests green");
+  });
 });

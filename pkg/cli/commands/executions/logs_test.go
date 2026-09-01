@@ -157,6 +157,11 @@ func TestRenderRunnerLogRecordFormatsKindPreviewAndTools(t *testing.T) {
 			want:   "$ npm run build\n",
 		},
 		{
+			name:   "cmd start with multiline preview shows only first line",
+			record: runneraction.LiveLogRecord{Type: "cmd_start", Kind: "bash", Text: "Build", Preview: "set -e\necho building"},
+			want:   "$ [BASH] set -e\n",
+		},
+		{
 			name:   "tool start",
 			record: runneraction.LiveLogRecord{Type: "tool_start", Kind: "read", Text: "pkg/foo.go"},
 			want:   "  -> [READ] pkg/foo.go\n",

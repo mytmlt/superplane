@@ -31,6 +31,18 @@ describe("liveLogSections", () => {
     expect(sectionTitle(state.sections[0])).toBe("You are implementing");
   });
 
+  it("uses only the first line of a multi-line preview for the section title", () => {
+    const state = startCommandSection(emptyState(), {
+      index: 1,
+      text: "Build",
+      startedAtMs: 10,
+      kind: "bash",
+      preview: "set -e\necho building\necho done",
+    });
+    expect(state.sections[0].preview).toBe("set -e\necho building\necho done");
+    expect(sectionTitle(state.sections[0])).toBe("set -e");
+  });
+
   it("nests tool output under a prompt section and keeps notes between tools", () => {
     let state = startCommandSection(emptyState(), {
       index: 5,
