@@ -278,6 +278,15 @@ function toolGroupCount(section: CommandSection): number {
   return section.events.filter((event) => event.kind === "tools").length;
 }
 
+/** First non-empty line of the section preview, for the dialog's single-line header.
+ * The Automations tab shows the full preview instead; see notesFromLiveLogSections. */
 export function sectionTitle(section: CommandSection): string {
-  return section.preview?.trim() || section.text;
+  const full = section.preview?.trim() || section.text;
+  for (const line of full.split("\n")) {
+    const trimmed = line.trim();
+    if (trimmed) {
+      return trimmed;
+    }
+  }
+  return "";
 }

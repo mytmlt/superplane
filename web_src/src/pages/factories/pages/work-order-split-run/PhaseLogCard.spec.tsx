@@ -169,13 +169,13 @@ describe("PhaseLogCard collapsed stream", () => {
     const bashTitle = within(bash).getByText("Clone Repo");
     expect(bash).not.toHaveClass("whitespace-nowrap");
     expect(bashTitle).not.toHaveClass("truncate");
-    expect(bashTitle).toHaveClass("whitespace-normal", "break-words");
+    expect(bashTitle).toHaveClass("whitespace-pre-wrap", "break-words");
 
     const prompt = screen.getByTestId("split-run-stream-line-step-write");
     const promptTitle = within(prompt).getByText("Write Implementation Plan");
     expect(prompt).not.toHaveClass("whitespace-nowrap");
     expect(promptTitle).not.toHaveClass("truncate");
-    expect(promptTitle).toHaveClass("whitespace-normal", "break-words");
+    expect(promptTitle).toHaveClass("whitespace-pre-wrap", "break-words");
 
     const output = within(screen.getByTestId("split-run-stream-line-step-clone").parentElement as HTMLElement)
       .getByTestId("split-run-stream-output")
