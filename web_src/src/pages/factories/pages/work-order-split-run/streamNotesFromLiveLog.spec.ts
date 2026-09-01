@@ -121,4 +121,17 @@ describe("notesFromLiveLogSections", () => {
     ]);
     expect(notes.some((note) => note.componentType === "bash" && note.componentName === "echo a")).toBe(true);
   });
+
+  it("keeps newlines in multi-line bash and prompt previews", () => {
+    const multiLineBash = 'echo "step one"\necho "step two"';
+    const multiLinePrompt = "You are implementing a fix.\n\nRead the task files first.";
+
+    const notes = notesFromLiveLogSections("agent", [
+      { ...bashSection(), preview: multiLineBash },
+      { ...promptSection(), preview: multiLinePrompt },
+    ]);
+
+    expect(notes[0]?.componentName).toBe(multiLineBash);
+    expect(notes[1]?.componentName).toBe(multiLinePrompt);
+  });
 });
