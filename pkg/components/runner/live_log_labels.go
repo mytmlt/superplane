@@ -9,22 +9,20 @@ const (
 	LiveLogKindJavaScript = "javascript"
 	LiveLogKindPython     = "python"
 
-	liveLogPreviewMaxRunes = 2048
+	liveLogDisplayTextMaxRunes = 16384
 )
 
-// LiveLogPreview is the first non-empty line of user-facing command or prompt text.
-// The log row ellipsizes in the UI. The rune cap only bounds a huge one-line prompt.
-func LiveLogPreview(text string) string {
-	for _, line := range strings.Split(text, "\n") {
-		line = strings.TrimSpace(line)
-		if line == "" {
-			continue
-		}
-		runes := []rune(line)
-		if len(runes) > liveLogPreviewMaxRunes {
-			return string(runes[:liveLogPreviewMaxRunes])
-		}
-		return line
+// LiveLogDisplayText is the full user-facing command or prompt text: outer
+// whitespace trimmed, interior newlines preserved, capped at
+// liveLogDisplayTextMaxRunes so a very large body stays bounded. Callers
+// carry the result on BrokerCommand.Preview, which flows to the runner and
+// back on the live-log cmd_start record; the JSON field name "preview" is an
+// external contract with the runner and is not renamed here.
+func LiveLogDisplayText(text string) string {
+	text = strings.TrimSpace(text)
+	runes := []rune(text)
+	if len(runes) > liveLogDisplayTextMaxRunes {
+		return string(runes[:liveLogDisplayTextMaxRunes])
 	}
-	return ""
+	return text
 }
