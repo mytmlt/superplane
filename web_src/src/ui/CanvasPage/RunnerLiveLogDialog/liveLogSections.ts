@@ -394,18 +394,5 @@ function toolGroupCount(section: CommandSection): number {
 }
 
 export function sectionTitle(section: CommandSection): string {
-  return firstNonEmptyLine(section.preview) || section.text;
-}
-
-function firstNonEmptyLine(text?: string): string | undefined {
-  if (!text) {
-    return undefined;
-  }
-  for (const line of text.split("\n")) {
-    const trimmed = line.trim();
-    if (trimmed) {
-      return trimmed;
-    }
-  }
-  return undefined;
+  return section.preview?.trim() || section.text;
 }

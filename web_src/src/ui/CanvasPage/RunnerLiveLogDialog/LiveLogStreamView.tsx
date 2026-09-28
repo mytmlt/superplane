@@ -101,7 +101,7 @@ function CommandSectionHeader({
             {section.kind}
           </span>
         ) : null}
-        <span className="font-medium text-gray-900 dark:text-gray-100">{sectionTitle(section)}</span>
+        <span className="font-medium whitespace-pre-wrap text-gray-900 dark:text-gray-100">{sectionTitle(section)}</span>
       </div>
 
       <div className="flex items-center gap-2">
