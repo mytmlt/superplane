@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import { FirstRunAnalysisScreen } from "./FirstRunAnalysisScreen";
 import { analysisSphereFor } from "./firstRunSphereFor";
 import type { FirstRunChrome } from "./firstRunTypes";
@@ -12,6 +14,13 @@ export function FirstRunAnalysisHost(args: {
 }) {
   const { organizationId, factoryId, chrome, selectedRepo, onGoToBoard } = args;
   const { progress, sourceName, failed } = useFirstRunAnalysis(organizationId, factoryId);
+  // When a source completed its import with zero items the analysis screen
+  // has nothing to show, so send the user to the board immediately.
+  useEffect(() => {
+    if (progress.empty) {
+      onGoToBoard();
+    }
+  }, [progress.empty, onGoToBoard]);
   return (
     <FirstRunAnalysisScreen
       progress={progress}
